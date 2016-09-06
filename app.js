@@ -1,4 +1,4 @@
-function loadGifs(response){
+function loadGifs(response, imgInfo, newClass, i){
     var gifs = document.querySelector('.gifs');
 
     //create element to place random gif
@@ -6,8 +6,19 @@ function loadGifs(response){
     var image = document.createElement('img');
 
     //set the image src to the ajax response
-    var imageUrl = response.data.fixed_width_downsampled_url;
-    image.setAttribute('src', imageUrl)
+    if(imgInfo && i){
+      console.log("hi")
+      var imageUrl = response.data.images.original.url
+    }
+    else if(imgInfo){
+      var imageUrl = response.data.images.fixed_width_downsampled.url
+    } else {
+      var imageUrl = response.data.fixed_width_downsampled_url;
+    }
+    image.setAttribute('src', imageUrl);
+    image.classList.add('gif');
+    if(newClass) imageDiv.classList.add(newClass);
+    if(i == 0) imageDiv.classList.add('current')
 
     //append image to page
     imageDiv.appendChild(image)
@@ -17,8 +28,7 @@ function loadGifs(response){
 
 
 //AJAX REQUEST 
-function ajaxCall(){
-  var ajaxUrl = 'http://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=american+psycho';
+function ajaxCall(ajaxUrl, imgInfo, newClass, i){
   var request = new XMLHttpRequest();
   request.open('GET', ajaxUrl, true);
 
@@ -27,7 +37,7 @@ function ajaxCall(){
       // Success!
       var resp = JSON.parse(request.responseText);
       console.log(resp)
-      loadGifs(resp)
+      loadGifs(resp, imgInfo, newClass, i)
     } else {
       // We reached our target server, but it returned an error
       console.log(err)
@@ -36,8 +46,102 @@ function ajaxCall(){
   request.send();
 }
 
-//load images
-for (var i = 0; i < 5; i++) ajaxCall()
+// see what page we are on
+var href = window.location.href.split("").splice(window.location.href.lastIndexOf("/")+1).join("").toLowerCase();
+
+//--------------------HOME PAGE------------------------
+//--------------------HOME PAGE------------------------
+if(href === ""){
+  function homePageImages(){
+    var ajaxUrlTrendy = 'http://api.giphy.com/v1/gifs/translate?s=puppies&api_key=dc6zaTOxFJmzC';
+    for (var i = 0; i < 12; i++) ajaxCall(ajaxUrlTrendy, true);
+  }
+  homePageImages()
+}
+
+//--------------------RANDOM PAGE------------------------
+//--------------------RANDOM PAGE------------------------
+if(href === "random"){
+  function randomPageImages(){
+    var ajaxUrlRandom = 'http://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC';
+    for (var i = 0; i < 12; i++) ajaxCall(ajaxUrlRandom);
+  }
+  randomPageImages()
+}
+
+//--------------------SCROLL PAGE------------------------
+//--------------------SCROLL PAGE------------------------
+if(href === "scroll"){
+  function scrollPageImages(){
+    var ajaxUrlTrendy = 'http://api.giphy.com/v1/gifs/translate?s=funny&api_key=dc6zaTOxFJmzC';
+    for (var i = 0; i < 20; i++) {
+      if(i < 11 ) ajaxCall(ajaxUrlTrendy, true, "hide", i);
+      else scroll()
+    }
+  }
+    
+  scrollPageImages()
+}
+
+function scroll (){
+
+      var nextEl = document.querySelector(".next");
+      var prevEl = document.querySelector(".prev"); 
+
+      function showNextGif() {
+        var currentElement = document.querySelector(".current");
+        //remove the current class from the main image 
+        currentElement.classList.remove("current");
+        console.log(currentElement.classList)   
+
+        if (currentElement.nextElementSibling) {
+          // That means there is another image 
+          currentElement.nextElementSibling.classList.add("current");   
+        } else {
+          // We are at the end of the slideshow
+          currentElement.parentElement.children[0].classList.add("current");     
+        }
+      };
+      
+
+      function showPreviousGif() {
+        var currentElement = document.querySelector(".current");
+        
+        currentElement.classList.remove("current");
+
+        if (currentElement.previousElementSibling) {
+          // That means there is another image 
+          currentElement.previousElementSibling.classList.add("current");
+        } else {
+          // We are at the end of the slideshow
+          var childImages = currentElement.parentElement.children;
+          childImages[childImages.length - 1 ].classList.add("current");
+        } 
+      };  
+        nextEl.addEventListener("click", showNextGif);
+        prevEl.addEventListener("click", showPreviousGif);
+  }
+
+
+
+
+
+
+function searchGifs(){
+  event.preventDefault();
+  var formData = document.querySelector('form').elements
+  console.log(formData)
+}
+
+// load images for the search url
+if(href === "search"){
+  var search = document.querySelector('button');
+  search.addEventListener("submit", searchGifs)
+}
+
+
+
+
 
 
 

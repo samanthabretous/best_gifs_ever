@@ -1,6 +1,7 @@
 var http = require('http');
 var fs = require('fs');
 
+
 var server = http.createServer(function (req, res){
   
   function readFile(filename){
@@ -15,6 +16,7 @@ var server = http.createServer(function (req, res){
   if(url === '/') readFile('index.html');
   else if (url === '/random') readFile('random.html');
   else if (url === '/search') readFile('search.html');
+  else if (url === '/scroll') readFile('scroll.html');
   else if (url === '/main.css') readFile('main.css');
   else if (url ==='/app.js') readFile('app.js');
   else {
