@@ -148,6 +148,11 @@ button{
   color: #000;
 }
 
+h3{
+  font-size: 36px;
+  color: white;
+}
+
 .hide{
   display: none;
 }

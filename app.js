@@ -1,3 +1,5 @@
+
+
 function loadGifs(response, imgInfo, newClass, i){
     var gifs = document.querySelector('.gifs');
 
@@ -7,11 +9,19 @@ function loadGifs(response, imgInfo, newClass, i){
 
     //set the image src to the ajax response
     if(imgInfo && i){
-      console.log("hi")
       var imageUrl = response.data.images.original.url
     }
     else if(imgInfo){
-      var imageUrl = response.data.images.fixed_width_downsampled.url
+      if(response.data.length == 0) {
+        if(runLoop){
+          var errorMessage = document.createElement('h3')
+          errorMessage.innerText = "Opps. Please search again"
+          gifs.appendChild(errorMessage)
+        }
+        runLoop = false;
+        return;
+      }
+      //var imageUrl = response.data.images.fixed_width_downsampled.url
     } else {
       var imageUrl = response.data.fixed_width_downsampled_url;
     }
@@ -36,7 +46,6 @@ function ajaxCall(ajaxUrl, imgInfo, newClass, i){
     if (request.status >= 200 && request.status < 400) {
       // Success!
       var resp = JSON.parse(request.responseText);
-      console.log(resp)
       loadGifs(resp, imgInfo, newClass, i)
     } else {
       // We reached our target server, but it returned an error
@@ -125,18 +134,31 @@ function scroll (){
 
 
 
+//--------------------SEARCH PAGE------------------------
+//--------------------SEARCH PAGE------------------------
 
+var runLoop = true;
 
 function searchGifs(){
   event.preventDefault();
-  var formData = document.querySelector('form').elements
-  console.log(formData)
+
+  //reset the form
+  var input = document.querySelector('input')
+  input.value =""
+  var gifs = document.querySelector('.gifs')
+  gifs.innerHTML = "";
+  
+  var formData = document.querySelector('form').elements;
+  var search = formData.search.value;
+  var ajaxUrlTrendy = 'http://api.giphy.com/v1/gifs/translate?s=' + search +'&api_key=dc6zaTOxFJmzC';
+  for (var i = 0; i < 12; i++) ajaxCall(ajaxUrlTrendy, true);
+
 }
 
 // load images for the search url
 if(href === "search"){
   var search = document.querySelector('button');
-  search.addEventListener("submit", searchGifs)
+  search.addEventListener("click", searchGifs)
 }
 
 
